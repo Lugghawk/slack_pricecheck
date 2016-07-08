@@ -1,6 +1,6 @@
 # SlackPricecheck
 
-**TODO: Add description**
+Slack bot which responds to mentions by searching IsThereAnyDeal.com for the mentioned game and responding with the best price and what store it's on.
 
 ## Installation
 

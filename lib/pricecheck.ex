@@ -1,4 +1,4 @@
-defmodule PriceCheck do
+defmodule PriceCheck.Slack do
   use Slack
 
   def handle_connect(slack) do
@@ -6,15 +6,18 @@ defmodule PriceCheck do
   end
 
   def handle_message( message = %{type: "message"}, slack) do
-    IO.puts ("I got a message from #{message.channel}:  #{message.text}")
+    if mentions_me?(message.text, slack) do
+      IO.puts "message directed at me!"
+    end
+  end
+
+  def mentions_me?(messagetext, slack) do
+    String.contains? messagetext, "<@#{slack.me.id}>"
   end
 
   def handle_message(_,_), do: :ok
 
-
   def handle_info({:message, text, channel}, slack) do
-    IO.puts "Sending your message, captain!"
-
     send_message(text, channel, slack)
     {:ok, slack}
   end

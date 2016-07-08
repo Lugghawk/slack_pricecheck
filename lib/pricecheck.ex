@@ -7,17 +7,20 @@ defmodule PriceCheck.Slack do
     PriceCheck.IsThereAnyDeal.start_link(Application.get_env(:slack_pricecheck, :itad_token))
   end
 
-  def handle_message( message = %{type: "message"}, slack) do
-    if mentions_me?(message.text, slack) do
-      title = game_title(message.text, slack)
-      reply = case best_price(title) do
-        {:ok, %{price: price, store: store}} ->
-          "Best price is #{number_to_currency(price)} CAD at #{store}"
-        _ ->
-          "Couldn't find #{title}. Try a more specific title."  
+  def handle_message(%{subtype: _subtype}, _slack), do: :ok
 
-      end
-      send_message(reply, message.channel, slack)
+  def handle_message(message = %{type: "message"}, slack) do
+    if mentions_me?(message.text, slack) do
+      spawn_link(fn ->
+       title = game_title(message.text, slack)
+       reply = case best_price(title) do
+         {:ok, %{price: price, store: store, url: url}} ->
+           "Best price is #{number_to_currency(price)} CAD at #{store}\n#{url}"
+         _ ->
+           "Couldn't find #{title}. Try a more specific title."
+       end
+       send_message(reply, message.channel, slack)
+      end)
     end
   end
 

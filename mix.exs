@@ -14,7 +14,7 @@ defmodule SlackPricecheck.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :slack],
+    [applications: [:logger, :slack, :httpotion, :poison, :number],
      mod: {SlackPricecheck, []}]
   end
 
@@ -29,6 +29,9 @@ defmodule SlackPricecheck.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [{:slack, "~> 0.7.0"},
-     {:websocket_client, git: "https://github.com/jeremyong/websocket_client"}]
+     {:websocket_client, git: "https://github.com/jeremyong/websocket_client"},
+     {:httpotion, "~> 3.0.0"},
+     {:poison, "~> 2.0"},
+     {:number, "~> 0.4.2"}]
   end
 end

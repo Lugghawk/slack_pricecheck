@@ -6,10 +6,10 @@ defmodule SlackPricecheck do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    children = [
-      # Define workers and child supervisors to be supervised
-      worker(PriceCheck.Slack, [Application.get_env(:slack_pricecheck, :slack_token)]),
-    ]
+    children = []
+    if (Application.get_env(:slack_pricecheck, :start_slack)) do
+      children = children ++ [worker(PriceCheck.Slack, [Application.get_env(:slack_pricecheck, :slack_token)])]
+    end
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options

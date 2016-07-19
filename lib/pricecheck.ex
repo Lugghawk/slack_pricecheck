@@ -11,20 +11,26 @@ defmodule PriceCheck.Slack do
 
   def handle_message(message = %{type: "message"}, slack) do
     if mentions_me?(message.text, slack) do
-      spawn_link(fn ->
-       title = game_title(message.text, slack)
-       reply = case best_price(title) do
-         {:ok, %{price: price, store: store, url: url}} ->
-           "Best price is #{number_to_currency(price)} CAD at #{store}\n#{url}"
-         _ ->
-           "Couldn't find #{title}. Try a more specific title."
-       end
-       send_message(reply, message.channel, slack)
+      spawn_link(fn -> 
+       get_game_price(message.text, slack)
       end)
     end
+    :ok
   end
 
   def handle_message(_,_), do: :ok
+
+  defp get_game_price(message, slack) do
+    title = game_title(message, slack)
+    reply = case best_price(title) do
+      {:ok, %{price: price, store: store, url: url}} ->
+        "Best price is #{number_to_currency(price)} CAD at #{store}\n#{url}"
+      _ ->
+        "Couldn't find #{title}. Try a more specific title."
+      end
+    send_message(reply, message.channel, slack)
+    :ok
+  end
 
   defp best_price(title) do
     PriceCheck.IsThereAnyDeal.get_best_price(title)

@@ -45,6 +45,9 @@ defmodule PriceCheck.Slack do
     String.contains? messagetext, "<@#{slack.me.id}>"
   end
 
+  def handle_close(reason, _slack) do
+    raise reason
+  end
 
   def handle_info({:message, text, channel}, slack) do
     send_message(text, channel, slack)
